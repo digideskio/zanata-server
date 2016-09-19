@@ -47,6 +47,7 @@ import javax.inject.Named;
 import org.apache.deltaspike.jpa.api.transaction.Transactional;
 import org.richfaces.event.FileUploadEvent;
 import org.richfaces.model.UploadedFile;
+import org.zanata.dao.WebHookDAO;
 import org.zanata.events.DocumentLocaleKey;
 import org.zanata.exception.AuthorizationException;
 import org.zanata.async.handle.CopyVersionTaskHandle;
@@ -68,7 +69,9 @@ import org.zanata.model.HIterationGroup;
 import org.zanata.model.HLocale;
 import org.zanata.model.HProjectIteration;
 import org.zanata.model.HRawDocument;
+import org.zanata.model.WebHook;
 import org.zanata.model.type.TranslationSourceType;
+import org.zanata.model.type.WebhookType;
 import org.zanata.rest.StringSet;
 import org.zanata.rest.dto.extensions.ExtensionType;
 import org.zanata.rest.dto.extensions.comment.SimpleComment;
@@ -83,6 +86,7 @@ import org.zanata.service.TranslationFileService;
 import org.zanata.service.TranslationService;
 import org.zanata.service.TranslationStateCache;
 import org.zanata.service.VersionStateCache;
+import org.zanata.service.impl.WebhookServiceImpl;
 import org.zanata.ui.AbstractListFilter;
 import org.zanata.ui.AbstractSortAction;
 import org.zanata.ui.CopyAction;
@@ -188,6 +192,13 @@ public class VersionHomeAction extends AbstractSortAction implements
 
     @Inject
     private UrlUtil urlUtil;
+
+    @Inject
+    private WebhookServiceImpl webhookService;
+
+    @Inject
+    private WebHookDAO webHookDAO;
+
 
     private List<HLocale> supportedLocale;
 
@@ -324,6 +335,22 @@ public class VersionHomeAction extends AbstractSortAction implements
         copyVersionManager.cancelCopyVersion(projectSlug, versionSlug);
         conversationScopeMessages.setMessage(FacesMessage.SEVERITY_INFO,
                 msgs.format("jsf.copyVersion.Cancelled", versionSlug));
+    }
+
+    public boolean isTranslationChangedWebhookAvailable() {
+        List<WebHook> webHooks = webHookDAO.getWebHooksForType(projectSlug,
+                WebhookType.ManuallyTriggeredEvent);
+        return !webHooks.isEmpty();
+    }
+
+    public void triggerTranslationChangedWebhookEvent() {
+        List<WebHook> webHooks = webHookDAO.getWebHooksForType(projectSlug,
+                WebhookType.ManuallyTriggeredEvent);
+
+        if (selectedLocale != null && !webHooks.isEmpty()) {
+            webhookService.processTranslationUpdated(projectSlug, versionSlug,
+                    selectedLocale.getLocaleId(), webHooks);
+        }
     }
 
     // TODO Serializable only because it's a dependent bean
