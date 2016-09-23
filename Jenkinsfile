@@ -83,7 +83,9 @@ timestamps {
                        --settings .travis-settings.xml \
                        -Dmaven.test.failure.ignore \
           """
-          junit '**/target/surefire-reports/TEST-*.xml'
+          def testFiles = '**/target/surefire-reports/TEST-*.xml'
+          setJUnitPrefix("UNIT", testFiles)
+          junit testFiles
         }
       }
     }
@@ -103,6 +105,7 @@ timestamps {
         }
       }
     }
+    tasks.failFast = true
     parallel tasks
   }
 }
@@ -135,6 +138,14 @@ def integrationTests(def appserver) {
       // -Dmaven.war.skip (but we might need zanata-test-war)
     }
   }
-  junit '**/target/failsafe-reports/TEST-*.xml'
+  def testFiles = '**/target/failsafe-reports/TEST-*.xml'
+  setJUnitPrefix(appserver.toUpperCase(), testFiles)
+  junit testFiles
   archiveIfUnstable '*/target/**/*.log,*/target/screenshots/**,**/target/site/jacoco/**,**/target/site/xref/**'
+}
+
+// from https://issues.jenkins-ci.org/browse/JENKINS-27395?focusedCommentId=256459&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-256459
+def setJUnitPrefix(prefix, files) {
+  // add prefix to qualified classname
+  sh "shopt -s globstar && sed -i \"s/\\(<testcase .*classname=['\\\"]\\)\\([a-z]\\)/\\1${prefix}.\\2/g\" $files"
 }
