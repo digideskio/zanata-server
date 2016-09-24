@@ -108,6 +108,7 @@ timestamps {
     tasks.failFast = true
     parallel tasks
   }
+  // TODO in case of failure, notify culprits via IRC and/or email
 }
 
 def archiveIfUnstable(pattern) {
