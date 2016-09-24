@@ -63,6 +63,9 @@ timestamps {
 -DexcludeFrontend \
         """
 // TODO remove -DexcludeFrontend (just for faster testing)
+
+// TODO build zanata-test-war but don't run functional tests (need to modify zanata-test-war pom)
+
         archiveArtifacts '**/target/*.war'
 //        archiveArtifacts '**/target/*.jar, **/target/*.war'
       }
@@ -142,6 +145,12 @@ def integrationTests(def appserver) {
                    -DexcludeFrontend \
       """
       // -Dmaven.war.skip (but we might need zanata-test-war)
+
+      // TODO might need some or all of these:
+      // -Dfunctional-test - probably obsolete
+      // -Dwebdriver.display=$DISPLAY
+      // -Dcargo.debug.jvm.args= -Dwebdriver.type=chrome -Dwebdriver.chrome.driver=/opt/chromedriver
+
     }
   }
   def testFiles = '**/target/failsafe-reports/TEST-*.xml'
