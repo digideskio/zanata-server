@@ -55,12 +55,14 @@ timestamps {
                      --settings .travis-settings.xml \
                      --update-snapshots \
                      -DstaticAnalysis=false \
+                     -Dcheckstyle.skip \
                      -Dchromefirefox \
                      -DskipTests \
                      -DskipFuncTests \
                      -DskipArqTests \
 -DexcludeFrontend \
         """
+// TODO remove -DexcludeFrontend (just for faster testing)
         archiveArtifacts '**/target/*.war'
 //        archiveArtifacts '**/target/*.jar, **/target/*.war'
       }
@@ -81,6 +83,8 @@ timestamps {
                        -pl zanata-war -am \
                        --batch-mode \
                        --settings .travis-settings.xml \
+                       -DstaticAnalysis=true \
+                       -Dcheckstyle.skip=false \
                        -Dmaven.test.failure.ignore \
           """
           def testFiles = '**/target/surefire-reports/TEST-*.xml'
@@ -128,6 +132,7 @@ def integrationTests(def appserver) {
                    --batch-mode \
                    --settings .travis-settings.xml \
                    -DstaticAnalysis=false \
+                   -Dcheckstyle.skip \
                    -Dappserver=$appserver \
                    -DallFuncTests \
                    -Dmaven.test.failure.ignore \
