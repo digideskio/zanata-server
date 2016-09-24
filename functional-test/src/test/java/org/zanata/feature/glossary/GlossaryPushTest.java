@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.zanata.util.MavenHome.mvn;
 
 /**
  * @see <a href="https://tcms.engineering.redhat.com/case/147311/">TCMS case</a>
@@ -51,11 +52,11 @@ public class GlossaryPushTest extends ZanataTestCase {
     private String userConfigPath;
     private String basicUserConfigPath;
 
-    private String pushCommand = "mvn -U --batch-mode zanata:glossary-push " +
+    private String pushCommand = mvn() + " -U --batch-mode zanata:glossary-push " +
             "-Dglossary.lang=fr -Dzanata.glossaryFile=compendium_fr.po " +
             "-Dzanata.userConfig=";
 
-    private String pushCSVCommand = "mvn -U --batch-mode zanata:glossary-push " +
+    private String pushCSVCommand = mvn() + " -U --batch-mode zanata:glossary-push " +
             "-Dzanata.glossaryFile=compendium_invalid.csv -Dglossary.lang=hi " +
             "-Dzanata.userConfig=";
 

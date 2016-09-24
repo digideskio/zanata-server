@@ -713,6 +713,7 @@
               </properties>
               <systemPropertyVariables>
                 <featureInventoryLocation>${project.build.directory}/feature-inventory</featureInventoryLocation>
+                <maven.home>${maven.home}</maven.home>
               </systemPropertyVariables>
             </configuration>
           </plugin>

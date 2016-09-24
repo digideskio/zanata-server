@@ -33,6 +33,7 @@ import java.io.File;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.zanata.util.MavenHome.mvn;
 
 /**
  * @author Carlos Munoz <a
@@ -63,7 +64,7 @@ public class GlossaryAdminTest extends ZanataTestCase {
 
         List<String> result = clientWorkFlow .callWithTimeout(
                 projectRootPath,
-                "mvn -U --batch-mode zanata:glossary-push " +
+                mvn() + " -U --batch-mode zanata:glossary-push " +
                         "-Dglossary.lang=hi " +
                         "-Dzanata.glossaryFile=compendium.csv " +
                         "-Dzanata.userConfig=" + userConfigPath);
