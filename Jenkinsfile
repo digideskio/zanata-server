@@ -116,6 +116,10 @@ timestamps {
     parallel tasks
   }
   // TODO in case of failure, notify culprits via IRC and/or email
+  // https://wiki.jenkins-ci.org/display/JENKINS/Email-ext+plugin#Email-extplugin-PipelineExamples
+  // http://stackoverflow.com/a/39535424/14379
+  // IRC: https://issues.jenkins-ci.org/browse/JENKINS-33922
+  // possible alternatives: Slack, HipChat, RocketChat, Telegram?
 }
 
 def archiveIfUnstable(pattern) {
