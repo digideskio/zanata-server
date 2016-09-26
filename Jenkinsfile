@@ -82,13 +82,19 @@ timestamps {
       node('Fedora') {
         ansicolor {
           unstash 'workspace'
-          sh """./mvnw surefire:test \
+          sh """./mvnw test \
                        -pl zanata-war -am \
                        --batch-mode \
                        --settings .travis-settings.xml \
                        -DstaticAnalysis=true \
                        -Dcheckstyle.skip=false \
                        -Dmaven.test.failure.ignore \
+                       -Dmaven.main.skip \
+                       -Dgwt.compiler.skip \
+                       -Dmaven.war.skip \
+                       -DskipFuncTests \
+                       -DskipArqTests \
+-DexcludeFrontend \
           """
           def testFiles = '**/target/surefire-reports/TEST-*.xml'
           setJUnitPrefix("UNIT", testFiles)
@@ -146,7 +152,7 @@ def integrationTests(def appserver) {
                    -Dmaven.main.skip \
                    -Dgwt.compiler.skip \
                    -Dmaven.war.skip \
-                   -DexcludeFrontend \
+-DexcludeFrontend \
       """
       // -Dmaven.war.skip (but we might need zanata-test-war)
 
