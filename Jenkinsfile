@@ -21,7 +21,7 @@ def void withPorts(Closure<Void> wrapped) {
 
 
 timestamps {
-  node('Fedora') {
+  node {
     ansicolor {
       stage('Checkout') {
         // Checkout code from repository
@@ -79,7 +79,7 @@ timestamps {
   stage('Parallel tests') {
     def tasks = [:]
     tasks['Unit tests'] = {
-      node('Fedora') {
+      node {
         ansicolor {
           unstash 'workspace'
           sh """./mvnw test \
@@ -103,7 +103,7 @@ timestamps {
       }
     }
     tasks['Integration tests: wildfly'] = {
-      node('Fedora') {
+      node {
         ansicolor {
           unstash 'workspace'
           integrationTests('wildfly8')
@@ -111,7 +111,7 @@ timestamps {
       }
     }
     tasks['Integration tests: jbosseap'] = {
-      node('Fedora') {
+      node {
         ansicolor {
           unstash 'workspace'
           integrationTests('jbosseap6')
