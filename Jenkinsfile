@@ -19,16 +19,21 @@ def void withPorts(Closure<Void> wrapped) {
   }
 }
 
+def void printNode() {
+  println "running on node ${env.NODE_NAME}"
+}
 
 timestamps {
   node {
     ansicolor {
       stage('Checkout') {
+        printNode()
         // Checkout code from repository
         checkout scm
       }
 
       stage('Install build tools') {
+        printNode()
         // TODO yum install the following
         // Xvfb libaio xorg-x11-server-Xvfb wget unzip git-core
         // https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
@@ -50,6 +55,7 @@ timestamps {
 
 
       stage('Build') {
+        printNode()
         sh """./mvnw clean package \
                      --batch-mode \
                      --settings .travis-settings.xml \
@@ -77,11 +83,13 @@ timestamps {
   }
 
   stage('Parallel tests') {
+    printNode()
     def tasks = [:]
     tasks['Unit tests'] = {
       node {
         ansicolor {
           unstash 'workspace'
+          printNode()
           sh """./mvnw test \
                        -pl zanata-war -am \
                        --batch-mode \
@@ -106,6 +114,7 @@ timestamps {
       node {
         ansicolor {
           unstash 'workspace'
+          printNode()
           integrationTests('wildfly8')
         }
       }
@@ -114,6 +123,7 @@ timestamps {
       node {
         ansicolor {
           unstash 'workspace'
+          printNode()
           integrationTests('jbosseap6')
         }
       }
