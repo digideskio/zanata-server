@@ -1,25 +1,25 @@
 #!/usr/bin/env groovy
 
 // these wrappers don't seem to be built in yet
-def void ansicolor(Closure<Void> wrapped) {
+void ansicolor(Closure<Void> wrapped) {
   wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm', 'defaultFg': 1, 'defaultBg': 2]) {
     wrapped()
   }
 }
-def void xvfb(Closure<Void> wrapped) {
+void xvfb(Closure<Void> wrapped) {
   wrap([$class: 'Xvfb']) {
     wrapped()
   }
 }
 
-def void withPorts(Closure<Void> wrapped) {
+void withPorts(Closure<Void> wrapped) {
   def ports = sh(script: 'etc/scripts/allocate-jboss-ports', returnStdout: true)
   withEnv(ports.trim().readLines()) {
     wrapped()
   }
 }
 
-def void printNode() {
+void printNode() {
   println "running on node ${env.NODE_NAME}"
 }
 
@@ -138,14 +138,16 @@ timestamps {
   // possible alternatives: Slack, HipChat, RocketChat, Telegram?
 }
 
-def archiveIfUnstable(pattern) {
+def archiveTestResultsIfUnstable() {
   // if tests have failed currentBuild.result will be 'UNSTABLE'
   if (currentBuild.result != null) {
-      step([$class: 'ArtifactArchiver', artifacts: pattern])
+      archive(
+        includes: '*/target/**/*.log,*/target/screenshots/**,**/target/site/jacoco/**,**/target/site/xref/**',
+        excludes: '**/BACKUP-*.log')
   }
 }
 def archiveArtifacts(pattern) {
-  step([$class: 'ArtifactArchiver', artifacts: pattern, fingerprint: true, onlyIfSuccessful: true])
+  archive artifacts: pattern, fingerprint: true, onlyIfSuccessful: true
 }
 def integrationTests(def appserver) {
   xvfb {
@@ -176,7 +178,7 @@ def integrationTests(def appserver) {
   def testFiles = '**/target/failsafe-reports/TEST-*.xml'
   setJUnitPrefix(appserver.toUpperCase(), testFiles)
   junit testFiles
-  archiveIfUnstable '*/target/**/*.log,*/target/screenshots/**,**/target/site/jacoco/**,**/target/site/xref/**'
+  archiveTestResultsIfUnstable()
 }
 
 // from https://issues.jenkins-ci.org/browse/JENKINS-27395?focusedCommentId=256459&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-256459
